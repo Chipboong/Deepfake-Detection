@@ -1,0 +1,6 @@
+.venv/
+checkpoints
+custom_test/
+picture/
+*zip
+**/*/__pycache__
