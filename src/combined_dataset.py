@@ -9,7 +9,7 @@ DATASET_NAME = "Rajarshi-Roy-research/Defactify_Image_Dataset"
 CUSTOM_TRAIN_PATH = Path("picture/train")
 
 train_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
+    transforms.Resize((380, 380)),
     transforms.RandomHorizontalFlip(p=0.5),
     transforms.ToTensor(),
     transforms.Normalize(
@@ -19,7 +19,7 @@ train_transform = transforms.Compose([
 ])
 
 eval_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
+    transforms.Resize((380, 380)),
     transforms.ToTensor(),
     transforms.Normalize(
         mean=[0.485, 0.456, 0.406],

@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, f1_score
 from tqdm import tqdm
 
 from src.dataset import get_dataloaders
-from src.model import create_model
+from src.efficientnet_model import create_model
 from src.config import (
     DEVICE,
     BATCH_SIZE,
@@ -139,11 +139,11 @@ def main():
     for parameter in model.parameters():
         parameter.requires_grad = False
 
-    for parameter in model.fc.parameters():
+    for parameter in model.classifier.parameters():
         parameter.requires_grad = True
 
     optimizer = optim.Adam(
-        model.fc.parameters(),
+        model.classifier.parameters(),
         lr=HEAD_LR,
         weight_decay=WEIGHT_DECAY
     )
@@ -162,7 +162,7 @@ def main():
         # Unfreeze backbone after initial frozen training
         if epoch == EPOCHS_FROZEN:
 
-            print("\nUnfreezing ResNet-50 backbone...")
+            print("\nUnfreezing EfficientNet-B7 backbone...")
 
             for parameter in model.parameters():
                 parameter.requires_grad = True
@@ -172,12 +172,12 @@ def main():
                     {
                         "params": [
                             p for name, p in model.named_parameters()
-                            if not name.startswith("fc.")
+                            if not name.startswith("classifier.")
                         ],
                         "lr": BACKBONE_LR
                     },
                     {
-                        "params": model.fc.parameters(),
+                        "params": model.classifier.parameters(),
                         "lr": HEAD_LR
                     }
                 ],

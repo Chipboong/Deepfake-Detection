@@ -19,12 +19,12 @@ from src.config import (
     USE_AMP
 )
 
-from src.model import create_model
+from src.efficientnet_model import create_model
 from src.combined_dataset import get_combined_dataloaders
 
 
-ORIGINAL_CHECKPOINT = "checkpoints/resnet50_original_best.pth"
-NEW_CHECKPOINT = "checkpoints/resnet50_combined_best.pth"
+ORIGINAL_CHECKPOINT = "checkpoints/efficientnet_b7_best.pth"
+NEW_CHECKPOINT = "checkpoints/efficientnet_b7_combined_best.pth"
 
 TOTAL_EPOCHS = EPOCHS_FROZEN + EPOCHS_FINETUNE
 
@@ -147,18 +147,18 @@ def train():
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     for name, parameter in model.named_parameters():
-        parameter.requires_grad = name.startswith("fc.")
+        parameter.requires_grad = name.startswith("classifier.")
 
     optimizer = Adam(
         [
             {
-                "params": model.fc.parameters(),
+                "params": model.classifier.parameters(),
                 "lr": HEAD_LR
             },
             {
                 "params": [
                     p for name, p in model.named_parameters()
-                    if not name.startswith("fc.")
+                    if not name.startswith("classifier.")
                 ],
                 "lr": BACKBONE_LR
             }
@@ -176,7 +176,7 @@ def train():
     for epoch in range(TOTAL_EPOCHS):
 
         if epoch == EPOCHS_FROZEN:
-            print("\nUnfreezing ResNet-50 backbone...")
+            print("\nUnfreezing EfficientNet-B7 backbone...")
 
             for parameter in model.parameters():
                 parameter.requires_grad = True
